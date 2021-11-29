@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html -->
+<html lang="en" data-darkreader-mode="dynamic" data-darkreader-scheme="dark" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style class="darkreader darkreader--fallback" media="screen"></style><style class="darkreader darkreader--text" media="screen"></style><style class="darkreader darkreader--invert" media="screen">.jfk-bubble.gtx-bubble, .captcheck_answer_label > input + img, span#closed_text > img[src^="https://www.gstatic.com/images/branding/googlelogo"], span[data-href^="https://www.hcaptcha.com/"] > #icon, #bit-notification-bar-iframe, ::-webkit-calendar-picker-indicator {
+    filter: invert(100%) hue-rotate(180deg) contrast(90%) !important;
+}</style><style class="darkreader darkreader--inline" media="screen">[data-darkreader-inline-bgcolor] {
+  background-color: var(--darkreader-inline-bgcolor) !important;
+}
+[data-darkreader-inline-bgimage] {
+  background-image: var(--darkreader-inline-bgimage) !important;
+}
+[data-darkreader-inline-border] {
+  border-color: var(--darkreader-inline-border) !important;
+}
+[data-darkreader-inline-border-bottom] {
+  border-bottom-color: var(--darkreader-inline-border-bottom) !important;
+}
+[data-darkreader-inline-border-left] {
+  border-left-color: var(--darkreader-inline-border-left) !important;
+}
+[data-darkreader-inline-border-right] {
+  border-right-color: var(--darkreader-inline-border-right) !important;
+}
+[data-darkreader-inline-border-top] {
+  border-top-color: var(--darkreader-inline-border-top) !important;
+}
+[data-darkreader-inline-boxshadow] {
+  box-shadow: var(--darkreader-inline-boxshadow) !important;
+}
+[data-darkreader-inline-color] {
+  color: var(--darkreader-inline-color) !important;
+}
+[data-darkreader-inline-fill] {
+  fill: var(--darkreader-inline-fill) !important;
+}
+[data-darkreader-inline-stroke] {
+  stroke: var(--darkreader-inline-stroke) !important;
+}
+[data-darkreader-inline-outline] {
+  outline-color: var(--darkreader-inline-outline) !important;
+}
+[data-darkreader-inline-stopcolor] {
+  stop-color: var(--darkreader-inline-stopcolor) !important;
+}</style><style class="darkreader darkreader--variables" media="screen">:root {
+   --darkreader-neutral-background: #131516;
+   --darkreader-neutral-text: #d8d4cf;
+   --darkreader-selection-background: #004daa;
+   --darkreader-selection-text: #e8e6e3;
+}</style><style class="darkreader darkreader--root-vars" media="screen"></style><style class="darkreader darkreader--user-agent" media="screen">html {
+    background-color: #181a1b !important;
+}
+html, body, input, textarea, select, button {
+    background-color: #181a1b;
+}
+html, body, input, textarea, select, button {
+    border-color: #736b5e;
+    color: #e8e6e3;
+}
+a {
+    color: #3391ff;
+}
+table {
+    border-color: #545b5e;
+}
+::placeholder {
+    color: #b2aba1;
+}
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    background-color: #555b00 !important;
+    color: #e8e6e3 !important;
+}
+::-webkit-scrollbar {
+    background-color: #202324;
+    color: #aba499;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #454a4d;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #575e62;
+}
+::-webkit-scrollbar-thumb:active {
+    background-color: #484e51;
+}
+::-webkit-scrollbar-corner {
+    background-color: #181a1b;
+}
+::selection {
+    background-color: #004daa !important;
+    color: #e8e6e3 !important;
+}
+::-moz-selection {
+    background-color: #004daa !important;
+    color: #e8e6e3 !important;
+}</style>
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Using MASM on Mac or Linux via Wine</title>
+  <meta name="description" content="MASM is a popular assembler used in many college courses, but it only runs on Windows operating systems. This post shows how to get it running on Mac or Linux using Wine.">
+
+  <script src="./Using MASM on Mac or Linux via Wine_files/BSCVfTNTG-yWNgHeuCpu_OptETQ.js.download"></script><link rel="stylesheet" href="./Using MASM on Mac or Linux via Wine_files/main.css"><style class="darkreader darkreader--sync" media="screen"></style>
+  <link rel="canonical" href="https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html">
+  <link rel="alternate" type="application/rss+xml" title="Ryan Eberhardt" href="https://reberhardt.com/blog/feed.xml">
+<meta name="darkreader" content="f3aca5545b8d45f2b7c4391df95fec75"><style class="darkreader darkreader--override" media="screen">.vimvixen-hint {
+    background-color: #7b5300 !important;
+    border-color: #d8b013 !important;
+    color: #f3e8c8 !important;
+}
+::placeholder {
+    opacity: 0.5 !important;
+}
+a[href="https://coinmarketcap.com/"] > svg[width="94"][height="16"] > path {
+    fill: var(--darkreader-neutral-text) !important;
+}
+#edge-translate-panel-body {
+    color: var(--darkreader-neutral-text) !important;
+}
+gr-main-header {
+    background-color: #0f3a48 !important;
+}</style><script src="./Using MASM on Mac or Linux via Wine_files/embed.js.download" data-timestamp="1638227337805"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/embed/styles/lounge.3e33cc45b553fa4f7fd3dfc49dc03ed0.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/common.bundle.2f2f40d40785c9541a90e9086c8770a3.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/lounge.bundle.2737369a2131ed319d0273590d7dc69d.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"><script async="" id="dsq_recs_scr" src="./Using MASM on Mac or Linux via Wine_files/recommendations.js.download"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/recommendations/styles/recommendations.10022a97346f1c6e3798931bbd8e4bb5.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/recommendations/common.bundle.6c6defcc206edabe5048d82459ee0a0e.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/recommendations/recommendations.bundle.926bc472e4859a48daa346b4ba2ab4f4.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"></head>
+
+
+    <body>
+
+        <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="https://reberhardt.com/blog/">Ryan Eberhardt</a>
+
+    <nav class="site-nav">
+      <a href="https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#beb9b0;"></path>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#beb9b0;"></path>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#beb9b0;"></path>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+		<a class="page-link" href="https://reberhardt.com/">About</a>
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+        <div class="page-content">
+            <div class="wrapper">
+                <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Using MASM on Mac or Linux via Wine</h1>
+    <p class="post-meta"><time datetime="2016-01-30T11:22:55-08:00" itemprop="datePublished">Jan 30, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This semester, I am taking a class on assembly programming using Kip Irvine’s
+book “Assembly Language for Intel-Based Computers.” Unfortunately, the book
+should really be called “Assembly Language for Intel-Based <em>Windows</em>
+Computers,” as it is written for Microsoft Macro Assembler (MASM). It mentions
+that the programs in the book could be converted to TASM assembly fairly
+easily, but they will not run out of the box.</p>
+
+<p>I could run MASM on a Windows virtual machine, but that would be fairly heavy
+to have running whenever I want to work on assembly. Instead, I wanted to see
+if I could run MASM with little overhead using <a href="https://www.winehq.org/">Wine</a>.
+It turns out that this is fairly easy to do!</p>
+
+<!--more-->
+
+<h2 id="install-wine">Install Wine</h2>
+
+<p>Good instructions for installing Wine on Mac are available
+<a href="http://www.davidbaumgold.com/tutorials/wine-mac/">here</a>. Instructions for
+Ubuntu are available <a href="https://wiki.winehq.org/Ubuntu">here</a>. The install
+process for other distros should be fairly straightforward as well.</p>
+
+<p>The TL;DR for intsalling on Mac is to install XQuartz and wine via homebrew:</p>
+
+<p><code class="language-plaintext highlighter-rouge">brew install Caskroom/cask/xquartz wine</code></p>
+
+<h2 id="create-a-new-wineprefix">Create a new wineprefix</h2>
+
+<p>Commands executed using <code class="language-plaintext highlighter-rouge">wine</code> are executed in “Wine prefixes,” which are
+virtual Windows environments of sorts. By default, the <code class="language-plaintext highlighter-rouge">~/.wine</code> prefix is
+used; configuration for this environment is stored in <code class="language-plaintext highlighter-rouge">~/.wine/*.reg</code> files,
+and the C:\ file tree is stored in <code class="language-plaintext highlighter-rouge">~/.wine/drive_c</code>.</p>
+
+<p>We could run MASM in the default <code class="language-plaintext highlighter-rouge">wine</code> prefix and it would work perfectly
+fine. However, we will be setting Windows environment variables that could
+potentially interfere with other programs running on Wine. If you plan on using
+Wine for anything else, it is best to install MASM in its own Wine prefix.  You
+can create a new prefix as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WINEARCH=win32 WINEPREFIX=~/wine-masm winecfg
+</code></pre></div></div>
+
+<p>Wine will initialize a new Windows file system tree at <code class="language-plaintext highlighter-rouge">~/wine-masm/drive_c</code>
+and open a window for you to configure the system. The defaults are fine, so
+you can close the Wine Configuration window that appears.</p>
+
+<h2 id="download-and-extract-masm32">Download and extract MASM32</h2>
+
+<p>I downloaded MASM from http://www.masm32.com/. You can download and run the
+installer as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># You may want to install wget and unzip through your package manager if
+# you don't have them
+wget http://website.assemblercode.com/masm32/masm32v11r.zip
+unzip masm32v11r.zip
+WINEPREFIX=~/wine-masm wine install.exe
+</code></pre></div></div>
+
+<p>The first steps of the installer are fairly self-explanatory:</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-1.png" alt="Click install to begin"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-2.png" alt="Choose C: as the installation partition"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-3.png" alt="Click OK"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-4.png" alt="Click Extract"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-5.png" alt="MASM begins extracting"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-6.png" alt="Clck OK to start build"></p>
+
+<p>After clicking OK, the installer starts assembling/linking some libraries and
+outputs its progress in the terminal:</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-7.png" alt="Build log appears in terminal"></p>
+
+<p>At one point, the installer asks if I want to overwrite <code class="language-plaintext highlighter-rouge">msvcrt.exp</code>. I’ve
+tried it with both <code class="language-plaintext highlighter-rouge">yes</code> and <code class="language-plaintext highlighter-rouge">no</code>, and I don’t think it matters.</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-8.png" alt="Type &quot;y&quot; to continue"></p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-9.png" alt="Installer success"></p>
+
+<p>A dialog appears asking if you want to create a shortcut to the MASM editor:</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-10.png" alt="Create editor shortcut prompt"></p>
+
+<p>We aren’t using the Windows desktop, and we probably won’t even be using the
+MASM editor (I much prefer Sublime or vim), so click No.</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-11.png" alt="Installation success"></p>
+
+<p>At the end, the MASM editor appears. You can close this, or check it out if
+you’re interested. You can always open it in the future by running
+<code class="language-plaintext highlighter-rouge">WINEPREFIX=~/wine-masm wine 'C:\masm32\qeditor.exe'</code>.</p>
+
+<p><img src="./Using MASM on Mac or Linux via Wine_files/install-12.png" alt="MASM editor"></p>
+
+<p>At this point, the installation is complete, and you should be able to run the
+MASM assembler:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ WINEPREFIX=~/wine-masm wine 'C:\masm32\bin\ml.exe'
+Microsoft (R) Macro Assembler Version 6.14.8444
+Copyright (C) Microsoft Corp 1981-1997.  All rights reserved.
+
+usage: ML [ options ] filelist [ /link linkoptions]
+Run "ML /help" or "ML /?" for more info
+</code></pre></div></div>
+
+<h2 id="download-and-extract-irvines-files-optional">Download and extract Irvine’s files (optional)</h2>
+
+<p>If you are using Irvine’s textbook, you will want to download his example and
+include files. The files are available on his website at
+http://www.kipirvine.com/asm/examples/index.htm. I am using the 5th edition
+textbook, so I downloaded the files from
+http://www.kipirvine.com/asm/examples/IrvineExamplesVS2008.zip:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://www.kipirvine.com/asm/examples/IrvineExamplesVS2008.zip
+unzip IrvineExamplesVS2008.zip -d IrvineExamplesVS2008
+cp -r IrvineExamplesVS2008/ ~/wine-masm/drive_c/Irvine
+</code></pre></div></div>
+
+<p>Irvine provides some scripts that (quite irritatingly/inflexibly) expect this
+download to be extracted to C:\Irvine:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp IrvineExamplesVS2008/ ~/wine-masm/drive_c/Irvine
+</code></pre></div></div>
+
+<p>If you are using a newer edition of the book, the example files are packaged in
+a .msi installer. You can download/extract as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://www.kipirvine.com/asm/examples/Irvine_7th_Edition.msi
+WINEPREFIX=~/wine-masm wine msiexec /i Irvine_7th_Edition.msi
+</code></pre></div></div>
+
+<p>Accept all the default options.</p>
+
+<h2 id="set-environment-variables">Set environment variables</h2>
+
+<p>We need to set the Windows PATH, INCLUDE, and LIB environment variables so that
+when we are assmebling/linking, we can find the MASM binaries/includes/shared
+libraries more easily. To do this, open <code class="language-plaintext highlighter-rouge">regedit</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WINEPREFIX=~/wine-masm wine regedit
+</code></pre></div></div>
+
+<p>Browse to <code class="language-plaintext highlighter-rouge">HKEY_CURRENT_USER/Environment</code>. Add a new string value (right click
+the right-hand pane, New &gt; String Value) named <code class="language-plaintext highlighter-rouge">PATH</code>. Double click this new
+value and enter the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;C:\masm32\bin
+</code></pre></div></div>
+
+<p>Also create an <code class="language-plaintext highlighter-rouge">INCLUDE</code> key with value <code class="language-plaintext highlighter-rouge">C:\masm32\include;C:\Irvine</code> and a
+<code class="language-plaintext highlighter-rouge">LIB</code> key with value <code class="language-plaintext highlighter-rouge">C:\masm32\lib;C:\Irvine</code>. (If you are just trying to run
+masm on *nix and aren’t using Irvine’s book, then you can omit the <code class="language-plaintext highlighter-rouge">C:\Irvine</code>
+parts of those keys.)</p>
+
+<p>At this point, you can call masm without needing to specify full binary or
+include paths:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ export WINEPREFIX=~/wine-masm
+$ wine ml -nologo -c -coff -Zi AddSub.asm
+ Assembling: AddSub.asm
+$ wine link /NOLOGO /SUBSYSTEM:CONSOLE /ENTRY:main \
+    /LIBPATH:'C:\Irvine' irvine32.lib kernel32.lib user32.lib AddSub.obj
+$ wine AddSub.exe
+
+  EAX=00030000  EBX=00401000  ECX=0032FF03  EDX=000000D0
+  ESI=7B84A20B  EDI=7FFDF000  EBP=0032FEE8  ESP=0032FED4
+  EIP=00401014  EFL=00000206  CF=0  SF=0  ZF=0  OF=0  AF=0  PF=1
+
+</code></pre></div></div>
+
+<h2 id="write-a-bash-function-to-easily-assemblelinkrun-asm-files">Write a bash function to easily assemble/link/run .asm files</h2>
+
+<p>At this point, we could be done. However, specifying all the masm flags can
+become a pain, and we could easily write a bash function to take care of this.
+In my <code class="language-plaintext highlighter-rouge">~/.bash_profile</code>, I have the following:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">export </span><span class="nv">WINE_MASM_DIR</span><span class="o">=</span>~/wine-masm
+<span class="k">function </span>masm<span class="o">()</span> <span class="o">(</span>
+    <span class="c"># Stop on errors</span>
+    <span class="nb">set</span> <span class="nt">-e</span>
+
+    <span class="c"># Use the correct wine directory</span>
+    <span class="nb">export </span><span class="nv">WINEPREFIX</span><span class="o">=</span><span class="nv">$WINE_MASM_DIR</span>
+
+    <span class="c"># Get the path to the file without a .asm extension</span>
+    <span class="nv">FILENAME</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">basename</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span>
+    <span class="nv">EXTENSION</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">FILENAME</span><span class="p">##*.</span><span class="k">}</span><span class="s2">"</span>
+    <span class="nb">shopt</span> <span class="nt">-s</span> nocasematch   <span class="c"># String case-insensitive comparison</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$EXTENSION</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"asm"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">FILENAME</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">FILENAME</span><span class="p">%.*</span><span class="k">}</span><span class="s2">"</span>   <span class="c"># Remove extension</span>
+    <span class="k">fi
+    </span><span class="nv">UNIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span><span class="si">)</span><span class="s2">/</span><span class="nv">$FILENAME</span><span class="s2">"</span>
+
+    <span class="c"># Convert forwards slashes into backslashes</span>
+    <span class="nv">WINDOWS_PATH</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$UNIX_PATH</span><span class="s2">"</span> | <span class="nb">tr</span> <span class="s1">'/'</span> <span class="s1">'\'</span><span class="si">)</span>
+
+    <span class="c"># Assemble file</span>
+    wine ml <span class="nt">-nologo</span> <span class="nt">-c</span> <span class="nt">-coff</span> <span class="nt">-Zi</span> <span class="s2">"</span><span class="nv">$WINDOWS_PATH</span><span class="s2">.asm"</span>
+
+    <span class="c"># Link files</span>
+    <span class="c"># Notes: Irvine's asm32.bat script includes a /DEBUG flag. I found that</span>
+    <span class="c"># including this flag causes a link fail:</span>
+    <span class="c">#   LINK : fatal error LNK1000: unknown error; consult documentation for</span>
+    <span class="c">#   technical support options</span>
+    <span class="c"># Therefore, I have omitted it. Additionally, the default entry point</span>
+    <span class="c"># for Wine or perhaps later versions of Windows appears to be</span>
+    <span class="c"># mainCRTStartup instead of main (see http://stackoverflow.com/a/12391264),</span>
+    <span class="c"># so we need to manually specify main as the entry point with /ENTRY.</span>
+    wine <span class="nb">link</span> /NOLOGO /SUBSYSTEM:CONSOLE /ENTRY:main <span class="se">\</span>
+        /LIBPATH:<span class="s1">'C:\Irvine'</span> <span class="se">\</span>
+        irvine32.lib kernel32.lib user32.lib <span class="s2">"</span><span class="nv">$WINDOWS_PATH</span><span class="s2">.obj"</span>
+
+    <span class="c"># Run the linked executable</span>
+    wine <span class="s2">"</span><span class="nv">$WINDOWS_PATH</span><span class="s2">.exe"</span>
+<span class="o">)</span></code></pre></figure>
+
+<p>Feel free to tweak this function as necessary.</p>
+
+<p>Once you “reload” your bash profile (<code class="language-plaintext highlighter-rouge">. ~/.bash_profile</code>), you can
+assemble/link/run .asm files in one command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ masm AddSub.asm
+ Assembling: .\AddSub.asm
+
+  EAX=00030000  EBX=00401000  ECX=0033FF03  EDX=000000D0
+  ESI=7B84A20B  EDI=7FFDF000  EBP=0033FEE8  ESP=0033FED4
+  EIP=00401014  EFL=00000206  CF=0  SF=0  ZF=0  OF=0  AF=0  PF=1
+
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Wine is really handy when it works – and it works quite well in this case,
+without any DLL overrides or fancy configuration or what not. We are able to run
+MASM and assembled binaries with little overhead, and we can use our host shells
+and editors without needing any fancy tricks!</p>
+
+  </div>
+
+  <div class="post-footer">
+      <p>
+        I'm Ryan, and I would love to hear from you.
+        <a href="https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html#" onmouseover="this.href = atob(&#39;bWFpbHRvOnJ5YW5AcmViZXJoYXJkdC5jb20=&#39;) //reduce spam">Send me an email</a> or leave a comment below!
+      </p>
+      <a href="https://mailchi.mp/6165a54b4861/reberhardt-blog">
+          <img src="./Using MASM on Mac or Linux via Wine_files/cta.gif" alt="Waving stick figure" class="call-to-action">
+      </a>
+      <p>
+        <em>Interested in reading more articles like this one?</em>
+        <a href="https://mailchi.mp/6165a54b4861/reberhardt-blog">Join my mailing
+        list</a> and I'll email you when I publish a new post! I typically post
+        less than once a month.
+      </p>
+  </div>
+
+  
+    
+<div id="disqus_recommendations" style="margin-bottom: 12px;"><iframe id="dsq-app8412" name="dsq-app8412" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="./Using MASM on Mac or Linux via Wine_files/saved_resource.html" style="width: 100% !important; border: none !important; overflow: hidden !important; height: 269px !important; display: inline !important; box-sizing: border-box !important; --darkreader-inline-border-top: initial; --darkreader-inline-border-right: initial; --darkreader-inline-border-bottom: initial; --darkreader-inline-border-left: initial;" data-darkreader-inline-border-top="" data-darkreader-inline-border-right="" data-darkreader-inline-border-bottom="" data-darkreader-inline-border-left="" horizontalscrolling="no" verticalscrolling="no"></iframe></div><div id="disqus_thread"><iframe id="dsq-app9800" name="dsq-app9800" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="./Using MASM on Mac or Linux via Wine_files/saved_resource(1).html" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1800px !important; --darkreader-inline-border-top: initial; --darkreader-inline-border-right: initial; --darkreader-inline-border-bottom: initial; --darkreader-inline-border-left: initial;" data-darkreader-inline-border-top="" data-darkreader-inline-border-right="" data-darkreader-inline-border-bottom="" data-darkreader-inline-border-left="" horizontalscrolling="no" verticalscrolling="no"></iframe></div>
+<script type="text/javascript">
+
+var disqus_config = function () {
+    this.page.identifier = "2016-01-30-masm-on-mac-or-linux";
+};
+
+(function() {
+    var d = document, s = d.createElement('script');
+    s.src = '//reberhardt.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+  
+
+</article>
+
+            </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ryan Eberhardt</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Ryan Eberhardt</li>
+          <li><a href="https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html#" onmouseover="this.href = atob(&#39;bWFpbHRvOnJ5YW5AcmViZXJoYXJkdC5jb20=&#39;) //reduce spam">Send me an email!</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/reberhardt7"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#999083;"></path></svg>
+</span><span class="username">reberhardt7</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/ryanaeberhardt"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#999083;"></path></svg>
+</span><span class="username">ryanaeberhardt</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>My name is Ryan Eberhardt. I write about programming, photography, music, and other random stuff. 
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+        <script>
+function elementVisible(el) {
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.bottom >= 0 &&
+        rect.right >= 0 &&
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.left <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
+function videoIsPlaying(elem) {
+    return (
+        elem.currentTime > 0 && !elem.paused && !elem.ended && elem.readyState > 2
+    );
+}
+
+// only play videos when they're in the viewport
+document.addEventListener("scroll", debounce(() => {
+    for (let elem of document.querySelectorAll('.video-figure.autoplay')) {
+        let video = elem.getElementsByTagName('video')[0];
+        if (elementVisible(video) && !videoIsPlaying(video)) {
+            video.play();
+        } else if (!elementVisible(video) && videoIsPlaying(video)) {
+            video.pause();
+        }
+    }
+}, 100));
+
+const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+if (/android/i.test(userAgent)) {
+    for (let elem of document.getElementsByClassName('mobile-overlay')) {
+        elem.style.display = 'block';
+    }
+
+    // wire up the mobile overlay so that they play videos on click
+    for (let elem of document.getElementsByClassName('video-figure')) {
+        let video = elem.getElementsByTagName('video')[0];
+        let overlay = elem.getElementsByClassName('mobile-overlay')[0];
+        overlay.addEventListener('click',
+            () => { video.play(); overlay.style.display = 'none'; }
+        );
+    }
+}
+        </script>
+    
+
+    
+<iframe style="display: none;" src="./Using MASM on Mac or Linux via Wine_files/saved_resource(2).html"></iframe><iframe style="display: none;" src="./Using MASM on Mac or Linux via Wine_files/saved_resource(3).html"></iframe></body></html>

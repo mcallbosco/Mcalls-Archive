@@ -16,7 +16,7 @@
         {
             "label": "MASM LINUX",
             "type": "shell",
-            "command": "source ~/.bash_profile && ls ${fileDirname} && masm '${file}'",
+            "command": "source ~/.bash_profile   && cd '${fileDirname}' && masm '${file}' && mv '${fileBasenameNoExtension}.exe' '${fileBasenameNoExtension}-ran.exe'",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

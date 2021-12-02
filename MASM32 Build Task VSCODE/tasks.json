@@ -6,7 +6,7 @@
         {
             "label": "MASM",
             "type": "shell",
-            "command": "cd '${fileDirname}'; del '${fileBasenameNoExtension}-old.exe' ; Rename-Item '${fileBasenameNoExtension}.exe' '${fileBasenameNoExtension}-old.exe'; ml -nologo -c -coff -Zi '${file}' ; link /NOLOGO /SUBSYSTEM:CONSOLE /ENTRY:main /LIBPATH:'C:/Irvine' irvine32.lib kernel32.lib user32.lib '${fileBasenameNoExtension}.obj'; ./${fileBasenameNoExtension}.exe",
+            "command": "cd '${fileDirname}'; ml -nologo -c -coff -Zi '${file}' ; link /NOLOGO /SUBSYSTEM:CONSOLE /ENTRY:main /LIBPATH:'C:/Irvine' irvine32.lib kernel32.lib user32.lib '${fileBasenameNoExtension}.obj'; ./${fileBasenameNoExtension}.exe ;  del  '${fileBasenameNoExtension}-old.exe' ; Rename-Item '${fileBasenameNoExtension}.exe' '${fileBasenameNoExtension}-old.exe'",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
